@@ -1,5 +1,7 @@
 # GameStore
 
+[ ASP.NET Core Full Course For Beginners ] (https://www.youtube.com/watch?v=AhAxLiGC7Pc&t=9909s)
+
 ## Extensions
 - .NET Install Tool ms-dotnettools
 - C# Dev Kit ms-dotnettools
