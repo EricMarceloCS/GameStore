@@ -1,9 +1,11 @@
 using GameStore.Frontend.Models;
+using GameStore.Frontend.Clients;
 
 namespace GameStore.Frontend.Clients;
 
 public class GamesClient
 {
+    private readonly Genre[] genres = new GenresClient().GetGenres();
     
     private readonly List<GameSummary> games =
     [
@@ -31,5 +33,20 @@ public class GamesClient
     ];
 
     public GameSummary[] GetGames() => [..games];
+
+    public void AddGame(GameDetails gameDetails)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(gameDetails.GenreId);
+        var genre = genres.Single(genre => genre.Id == int.Parse(gameDetails.GenreId));
+        GameSummary gameSummary = new ()
+        {
+            Id = games.Count + 1,
+            Name = gameDetails.Name,
+            Genre = genre.Name,
+            Price = gameDetails.Price,
+            ReleaseDate = gameDetails.ReleaseDate
+        };
+        games.Add(gameSummary);
+    }
 
 }
