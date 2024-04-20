@@ -3,50 +3,18 @@ using GameStore.Frontend.Clients;
 
 namespace GameStore.Frontend.Clients;
 
-public class GamesClient
+public class GamesClient(HttpClient httpClient)
 {
-    private readonly Genre[] genres = new GenresClient().GetGenres();
-    
-    private readonly List<GameSummary> games =
-    [
-        new(){
-            Id = 1,
-            Name = "Street Fighter II",
-            Genre = "Fighting",
-            Price = 19.99M,
-            ReleaseDate = new DateOnly(1992, 7, 15)
-        },
-        new(){
-            Id = 2,
-            Name = "Final Fantasy XIV",
-            Genre = "Roleplaying",
-            Price = 59.99M,
-            ReleaseDate = new DateOnly(2010, 9, 30)
-        },
-        new(){
-            Id = 3,
-            Name = "FIFA 23",
-            Genre = "Sports",
-            Price = 69.99M,
-            ReleaseDate = new DateOnly(2022, 9, 27)
-        }
-    ];
 
-    public GameSummary[] GetGames() => [..games];
+    public async Task<GameSummary[]> GetGamesAsync() => await httpClient.GetFromJsonAsync<GameSummary[]>("games") ?? [];
 
-    public void AddGame(GameDetails gameDetails)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(gameDetails.GenreId);
-        var genre = genres.Single(genre => genre.Id == int.Parse(gameDetails.GenreId));
-        GameSummary gameSummary = new ()
-        {
-            Id = games.Count + 1,
-            Name = gameDetails.Name,
-            Genre = genre.Name,
-            Price = gameDetails.Price,
-            ReleaseDate = gameDetails.ReleaseDate
-        };
-        games.Add(gameSummary);
-    }
+    public async Task AddGameAsyc(GameDetails gameDetails) => await httpClient.PostAsJsonAsync("games", gameDetails);
+
+    public async Task<GameDetails> GetGameAsync(int id) => await httpClient.GetFromJsonAsync<GameDetails>($"games/{id}") ?? 
+        throw new Exception("Could not find game.");
+
+    public async Task UpdateGameAsync(GameDetails updatedGame) => await httpClient.PutAsJsonAsync($"games/{updatedGame.Id}", updatedGame);
+
+    public async Task DeleteGameAsync(int id) => await httpClient.DeleteAsync($"games/{id}");
 
 }
